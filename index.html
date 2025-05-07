@@ -14,6 +14,37 @@ body {
   margin: 0;
 }
 
+body.dark-mode {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+body.dark-mode .topnav {
+  background-color: #222;
+}
+
+body.dark-mode .topnav a,
+body.dark-mode .topnav button.switch-btn {
+  background-color: #222;
+  color: #e0e0e0;
+}
+
+body.dark-mode .topnav a:hover,
+body.dark-mode .topnav button.switch-btn:hover {
+  background-color: #444;
+  color: white;
+}
+
+body.dark-mode .card {
+  background-color: #1e1e1e;
+  color: #f1f1f1;
+}
+
+body.dark-mode .footer {
+  background-color: #333;
+  color: #ddd;
+}
+
 #main-content {
   transition: opacity 0.5s ease;
 }
@@ -26,6 +57,11 @@ body {
   padding: 30px;
   text-align: center;
   background: white;
+}
+
+body.dark-mode .header {
+  background: #1e1e1e;
+  color: #f1f1f1;
 }
 
 .header h1 {
@@ -66,6 +102,10 @@ body {
   width: 25%;
   background-color: #f1f1f1;
   padding-left: 20px;
+}
+
+body.dark-mode .rightcolumn {
+  background-color: #1a1a1a;
 }
 
 .fakeimg {
@@ -138,6 +178,7 @@ body {
     <a href="#">Link</a>
     <a href="#">Link</a>
     <button class="switch-btn" id="switch-btn">Switch to Coding World</button>
+    <a href="#" id="dark-mode-btn" title="Toggle Dark Mode">🌙</a>
   </div>
 
   <div class="row" id="page-body"></div>
@@ -214,7 +255,7 @@ function switchPage() {
   const mainLink = document.getElementById('main-link');
 
   const savedScrollY = window.scrollY;
-
+  
   row.classList.add('hidden');
 
   setTimeout(() => {
@@ -250,17 +291,41 @@ function switchPage() {
   }, 500);
 }
 
+function applyDarkMode(enabled) {
+  document.body.classList.toggle('dark-mode', enabled);
+  localStorage.setItem('darkMode', enabled ? 'on' : 'off');
+  document.getElementById('dark-mode-btn').textContent = enabled ? '🌞' : '🌙';
+}
+
 document.getElementById('switch-btn').addEventListener('click', switchPage);
+document.getElementById('dark-mode-btn').addEventListener('click', () => {
+  const isDark = document.body.classList.contains('dark-mode');
+  applyDarkMode(!isDark);
+});
 
 window.onload = () => {
-  const mode = localStorage.getItem('mode');
-  const initial = document.getElementById('baking-template').content.cloneNode(true);
-  document.getElementById('page-body').appendChild(initial);
-
-  if (mode === 'coding') {
-    setTimeout(() => switchPage(), 10);
-  }
+  const darkPref = localStorage.getItem('darkMode') === 'on';
+  applyDarkMode(darkPref);
+  loadInitialPage();
 };
+
+function loadInitialPage() {
+  const mode = localStorage.getItem('mode');
+  const initialTemplate = document.getElementById(mode === 'coding' ? 'coding-template' : 'baking-template');
+  const row = document.getElementById('page-body');
+  const content = initialTemplate.content.cloneNode(true);
+  row.appendChild(content);
+  if (mode === 'coding') {
+    document.getElementById('header-title').textContent = 'Code-A-Bunch';
+    document.getElementById('header-sub').textContent = 'A new journey into the coding world by a creative developer.';
+    document.getElementById('header-msg').textContent = 'Welcome to the tech side!';
+    document.getElementById('switch-btn').textContent = 'Back to Baking';
+    document.getElementById('footer-text').textContent = 'Footer - Code World';
+    document.getElementById('main-link').href = 'https://github.com';
+    document.getElementById('main-link').textContent = 'GitHub';
+    showingCodeWorld = true;
+  }
+}
 </script>
 
 </body>
